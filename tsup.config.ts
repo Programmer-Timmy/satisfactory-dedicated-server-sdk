@@ -1,10 +1,9 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-    entry: ["src/index.ts"],
-    format: ["esm"],     // build both module formats
-    dts: true,                 // generate types
-    sourcemap: true,           // optional but recommended
+    entry: ['src/index.ts'],
+    format: ['esm', 'cjs'], // Build both ESM and CJS
+    dts: true, // Generate .d.ts files
+    splitting: false,
     clean: true,
-    external: ["node-fetch"],  // mark node-fetch as external dependency
 });

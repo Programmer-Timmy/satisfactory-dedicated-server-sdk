@@ -79,6 +79,7 @@ export class SatisfactoryApi {
                 body,
                 agent: httpsAgent,
                 signal: controller.signal, // <-- this makes abort work
+                //@ts-ignore
             }).catch((err) => {
                 if (err.name === 'AbortError') {
                     throw new APIError('TIMEOUT_ERROR', `Request timed out after ${timeout}ms`);
