@@ -5,6 +5,10 @@ on:
     tags:
       - 'V*'
       - 'v*'
+  workflow_dispatch:
+
+
+
 
 jobs:
   publish:
