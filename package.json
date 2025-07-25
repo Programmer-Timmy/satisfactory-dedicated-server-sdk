@@ -1,11 +1,18 @@
 {
   "name": "satisfactory-dedicated-server-sdk",
-  "version": "0.1.1-alpha.4",
+  "version": "0.1.1-alpha.5",
   "description": "A TypeScript / JavaScript SDK for interacting with the **Satisfactory** dedicated server API.",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts"
   },
