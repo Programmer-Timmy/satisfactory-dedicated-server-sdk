@@ -1,6 +1,6 @@
 {
   "name": "satisfactory-dedicated-server-sdk",
-  "version": "0.1.1-alpha.9",
+  "version": "0.1.1-alpha.10",
   "description": "A TypeScript / JavaScript SDK for interacting with the **Satisfactory** dedicated server API.",
   "license": "MIT",
   "type": "module",
@@ -27,7 +27,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.7.0"
   },
   "engines": {
     "node": ">=14"
