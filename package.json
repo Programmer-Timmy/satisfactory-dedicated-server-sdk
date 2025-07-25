@@ -1,6 +1,6 @@
 {
   "name": "satisfactory-dedicated-server-sdk",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "description": "A TypeScript / JavaScript SDK for interacting with the **Satisfactory** dedicated server API.",
   "license": "MIT",
   "main": "dist/index.js",
