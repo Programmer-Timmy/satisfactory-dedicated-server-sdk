@@ -31,9 +31,9 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
 
-          # Publish with 'beta' tag only if version contains '-beta'
-          if [[ "$VERSION" == *-beta* ]]; then
-            TAG="beta"
+          # Publish with 'alpha' tag only if version contains '-alpha'
+          if [[ "$VERSION" == *-alpha* ]]; then
+            TAG="alpha"
           else
             TAG="latest"
           fi
