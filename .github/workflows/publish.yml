@@ -3,6 +3,7 @@ name: Publish to GitHub Packages
 on:
   push:
     tags:
+      - 'V*'
       - 'v*'
 
 jobs:
