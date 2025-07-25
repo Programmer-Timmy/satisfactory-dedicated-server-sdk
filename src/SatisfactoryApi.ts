@@ -10,26 +10,26 @@ import fetch from 'node-fetch';
 
 /**
  * Options for the SatisfactoryAPI client.
- * @interface SatisfactoryAPIOptions
+ * @interface SatisfactoryApiOptions
  *
  * @property {boolean} [ignoreSSL=true] - Whether to ignore SSL certificate errors.
  * @property {number} [timeout=10000] - The timeout for requests in milliseconds.
  * @property {number} [healthCheckTimeout=1000] - The timeout for health check requests in milliseconds. This is set to 1000ms by default to ensure quick responses.
  */
-export interface SatisfactoryAPIOptions {
+export interface SatisfactoryApiOptions {
     ignoreSSL?: boolean;
     timeout?: number;
     healthCheckTimeout?: number;
 }
 
-export class SatisfactoryAPI {
+export class SatisfactoryApi {
     host: string;
     port: number;
     authToken?: string;
-    options? : SatisfactoryAPIOptions;
+    options? : SatisfactoryApiOptions;
 
 
-    constructor(host: string, port = 7777, options?: SatisfactoryAPIOptions , authToken?: string) {
+    constructor(host: string, port = 7777, options?: SatisfactoryApiOptions , authToken?: string) {
         this.host = host;
         this.port = port;
         this.authToken = authToken;
