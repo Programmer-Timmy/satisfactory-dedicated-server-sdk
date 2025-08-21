@@ -136,7 +136,8 @@ export class SatisfactoryApi {
          */
         for (let i = 0; i < retries; i++) {
             try {
-                const timeout = this.options?.healthCheckTimeout || 1000 + i * 1000;
+                const baseTimeout = this.options?.healthCheckTimeout || 1000;
+                const timeout = baseTimeout + i * 1000; // 1000, 2000, 3000, ...
                 // Attempt health check
                 const response = await this.post('HealthCheck', { ClientCustomData: clientCustomData }, timeout);
                 return { success: true, data: response };
