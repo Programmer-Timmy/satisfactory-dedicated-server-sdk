@@ -123,14 +123,31 @@ export class SatisfactoryApi {
         }
     }
 
-    async healthCheck(clientCustomData = ''): Promise<{ success: boolean; data?: any; message?: string }> {
-        try {
-            // Lower timeout for health check
-            const response = await this.post('HealthCheck', { ClientCustomData: clientCustomData }, this.options?.healthCheckTimeout || 1000);
-            return { success: true, data: response };
-        } catch (err: any) {
-            return { success: false, message: `Health check failed: ${err.message}` };
+    async healthCheck(clientCustomData: string = '', retries: number = 3): Promise<{ success: boolean; data?: any; message?: string }> {
+        /**
+         * Perform a health check on the Satisfactory Dedicated Server API.
+         * This method sends a POST request to the 'HealthCheck' endpoint with optional client custom data (mostly not required).
+         *
+         * @param {string} [clientCustomData=''] - Optional custom data to send with the health check request.
+         * @param {number} [retries=3] - Number of retries for the health check in case of failure.
+         *
+         * Note: The more retries you set, the longer the health check will take to complete.
+         * Every retry will increase the timeout by 1000ms (1 second).
+         */
+        for (let i = 0; i < retries; i++) {
+            try {
+                const timeout = this.options?.healthCheckTimeout || 1000 + i * 1000;
+                // Attempt health check
+                const response = await this.post('HealthCheck', { ClientCustomData: clientCustomData }, timeout);
+                return { success: true, data: response };
+            } catch (err: any) {
+                if (i === retries - 1) {
+                    return { success: false, message: `Health check failed after ${retries} attempts: ${err.message}` };
+                }
+            }
         }
+
+        return { success: false, message: 'Health check failed' };
     }
 
     async verifyAuthenticationToken(): Promise<Response> {
