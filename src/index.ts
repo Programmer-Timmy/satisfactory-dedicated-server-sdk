@@ -1,3 +1,3 @@
-export {SatisfactoryApi, SatisfactoryApiOptions} from './SatisfactoryApi';
+export {SatisfactoryApi} from './SatisfactoryApi';
 export * from './exceptions';
 export * from './Interfaces';

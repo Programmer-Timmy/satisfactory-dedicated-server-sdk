@@ -3,6 +3,9 @@
   "version": "0.1.1-alpha.11",
   "description": "A TypeScript / JavaScript SDK for interacting with the **Satisfactory** dedicated server API.",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -14,7 +17,10 @@
     }
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "docs:api-temp": "npx typedoc --out docs/api-temp src --plugin typedoc-plugin-markdown --hideBreadcrumbs --hidePageTitle --gitRevision main --theme markdown --readme none",
+    "docs:copy": "xcopy docs\\api-temp\\*.md website\\docs\\api\\ /Y /S /I",
+    "docs:api": "npm run docs:api-temp && npm run docs:copy"
   },
   "repository": {
     "type": "git",
@@ -23,7 +29,10 @@
   "devDependencies": {
     "@types/node": "^24.1.0",
     "@types/node-fetch": "^2.6.12",
+    "copyfiles": "^2.4.1",
     "tsup": "^8.5.0",
+    "typedoc": "^0.28.11",
+    "typedoc-plugin-markdown": "^4.8.1",
     "typescript": "^5.5.3"
   },
   "dependencies": {

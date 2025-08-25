@@ -1,0 +1,12 @@
+{
+  "label": "Guides",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "title": "Guides",
+    "description": "Step-by-step guides and tutorials to help you get started with the Satisfactory Dedicated Server SDK and make the most of its features.",
+    "slug": "/guides",
+    "keywords": ["Guides", "Tutorials", "Getting Started", "SDK", "Satisfactory", "Dedicated Server"],
+    "image": "/img/guides-banner.png"
+  }
+}
