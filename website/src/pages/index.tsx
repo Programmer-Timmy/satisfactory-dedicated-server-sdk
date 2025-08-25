@@ -96,7 +96,7 @@ function QuickLinksSection() {
                         </Link>
                     </div>
                     <div className="col col--3">
-                        <Link className="button button--outline button--lg" to="/docs/examples/">
+                        <Link className="button button--outline button--lg" to="#">
                             Code Examples - wip
                         </Link>
                     </div>

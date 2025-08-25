@@ -337,5 +337,5 @@ await api.shutdown();
 
 * Explore the full API in [API Reference](/docs/api/README.md).
 * Combine `ServerOptions` and `AdvancedGameSettings` for custom setups.
-* Handle failures programmatically using error classes. Learn more in the [Error Handling Guid](/docs/guides/error-handling.md).
+* Handle failures programmatically using error classes. Learn more in the [Error Handling Guid](/docs/guides/02-error-handling.md).
 

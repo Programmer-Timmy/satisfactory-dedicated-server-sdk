@@ -8,30 +8,6 @@ sidebar_label: Error Handling
 
 The `satisfactory-dedicated-server-api` provides several **error classes** to help you handle API failures gracefully. Proper error handling ensures your application can respond to server errors, invalid parameters, and network issues without crashing.
 
-<details>
-<summary>Experienced Users / Quick Reference</summary>
-
-* `APIError`: base class for all API failures.
-* `InvalidParameterError`: subclass for parameter issues.
-* Use [`MinimumPrivilegeLevel`](/docs/api/enumerations/MinimumPrivilegeLevel.md) to check permissions.
-* Catch network or HTTP errors separately.
-* Example pattern:
-
-```ts
-try {
-  await api.applyServerOptions({ DSAutoPause: true });
-} catch (err) {
-  if (err instanceof InvalidParameterError) {
-    console.error('Check input parameters:', err.message);
-  } else if (err instanceof APIError) {
-    console.error('API error:', err.errorCode, err.message);
-  } else {
-    console.error('Network or unknown error:', err);
-  }
-}
-```
-
-</details>
 ---
 
 ## Error Classes
