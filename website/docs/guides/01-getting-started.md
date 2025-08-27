@@ -59,6 +59,20 @@ If you already know the basics and want a fast reference:
 
 Install the package using npm or yarn:
 
+<Tabs queryString="install-method">
+  <TabItem value="npm" label="npm">
+    ```bash
+    npm install satisfactory-dedicated-server-api
+    ```
+  </TabItem>
+  <TabItem value="yarn" label="Yarn">
+    ```bash
+    yarn add satisfactory-dedicated-server-api
+    ```
+  </TabItem>
+</Tabs>
+
+
 ```bash
 npm install satisfactory-dedicated-server-api
 # or
@@ -98,10 +112,7 @@ Node.js enforces two checks:
 1. **Certificate validity** – Is the certificate trusted by your system?
 2. **Hostname matching** – Does the certificate hostname match the server hostname you are connecting to?
 
-> ⚠️ On local servers (like `127.0.0.1`), the hostname usually does not match a self-signed certificate, which causes Node.js to reject the connection.
-
 :::warning
-⚠️ Hostname mismatch error
 
 If you connect using a local IP or a hostname that does not match the certificate,
 you may encounter a **hostname mismatch error** during TLS verification.
@@ -112,7 +123,7 @@ To bypass this in **development or local testing**, you can disable strict SSL v
 const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true });
 ```
 
-⚠️ **Warning:** Only use this option in trusted environments (like local testing).  
+⚠️ **Note:** Only use this option in trusted environments (like local testing).  
 Do **not** disable SSL verification in production, as it removes protection against man-in-the-middle attacks.  
 For a proper fix, see Creating a Proper Self-Signed Certificate below.
 
