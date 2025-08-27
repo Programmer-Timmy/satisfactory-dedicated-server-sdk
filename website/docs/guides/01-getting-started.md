@@ -32,7 +32,7 @@ If you already know the basics and want a fast reference:
 
    ```ts
    import { SatisfactoryApi } from 'satisfactory-dedicated-server-api';
-   const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true });
+   const api = new SatisfactoryApi('127.0.0.1', 7777);
    ```
 3. **Fetch and trust the server certificate**
 
