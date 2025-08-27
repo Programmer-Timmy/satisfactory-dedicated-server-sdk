@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsup",
     "docs:api-temp": "npx typedoc --out tmp/api-temp src --plugin typedoc-plugin-markdown --hideBreadcrumbs --hidePageTitle --gitRevision main --theme markdown --readme none",
-    "docs:copy": "xcopy tmp\\api-temp\\*.md docs\\docs\\api\\ /Y /S /I",
+    "docs:copy": "cpy \"tmp/api-temp/**/*.md\" docs/docs/api/ --parents",
     "docs:api": "npm run docs:api-temp && npm run docs:copy"
   },
   "repository": {

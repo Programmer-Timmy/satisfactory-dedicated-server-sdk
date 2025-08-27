@@ -8,7 +8,7 @@ on:
 jobs:
   build-api:
     name: Build API Docs
-    runs-on: windows-latest # because of copping commands in npm script
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
