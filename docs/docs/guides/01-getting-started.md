@@ -3,7 +3,8 @@ id: getting-started
 title: Getting Started with Satisfactory Dedicated Server API
 sidebar_label: Getting Started
 ---
-
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Satisfactory Dedicated Server API
 
@@ -24,9 +25,18 @@ This guide is designed to help you get started quickly, whether you are a newcom
 If you already know the basics and want a fast reference:
 
 1. **Install the package**  
-   ```bash
-   npm install satisfactory-dedicated-server-api
-   ```
+   <Tabs queryString="install-method">
+       <TabItem value="npm" label="npm">
+        ```bash
+        npm install satisfactory-dedicated-server-api
+        ```
+      </TabItem>
+      <TabItem value="yarn" label="Yarn">
+        ```bash
+        yarn add satisfactory-dedicated-server-api
+        ```
+      </TabItem>
+   </Tabs>
 
 2. **Import and initialize the API client**
 
@@ -71,13 +81,6 @@ Install the package using npm or yarn:
     ```
   </TabItem>
 </Tabs>
-
-
-```bash
-npm install satisfactory-dedicated-server-api
-# or
-yarn add satisfactory-dedicated-server-api
-````
 
 ---
 

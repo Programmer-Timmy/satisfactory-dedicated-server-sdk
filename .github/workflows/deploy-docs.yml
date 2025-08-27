@@ -8,7 +8,23 @@ on:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
 jobs:
-  build:
+  build-api:
+    name: Build API Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate API docs
+        run: npm run docs:api
+  build-docusaurus:
     name: Build Docusaurus
     runs-on: ubuntu-latest
     steps:
@@ -21,16 +37,16 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        working-directory: website
+        working-directory: docs
         run: npm ci
       - name: Build website
-        working-directory: website
+        working-directory: docs
         run: npm run build
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: website/build
+          path: docs/build
 
   deploy:
     name: Deploy to GitHub Pages

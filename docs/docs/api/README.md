@@ -1,9 +1,3 @@
----
-id: index
-title: API Reference
-slug: /api
----
-
 **satisfactory-dedicated-server-sdk**
 
 ***
