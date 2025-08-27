@@ -100,8 +100,8 @@ Node.js enforces two checks:
 
 > ⚠️ On local servers (like `127.0.0.1`), the hostname usually does not match a self-signed certificate, which causes Node.js to reject the connection.
 
-<details class="alert alert--warning">
-<summary>⚠️ Hostname mismatch error & bypass</summary>
+:::warning
+⚠️ Hostname mismatch error
 
 If you connect using a local IP or a hostname that does not match the certificate,
 you may encounter a **hostname mismatch error** during TLS verification.
@@ -116,7 +116,7 @@ const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true }
 Do **not** disable SSL verification in production, as it removes protection against man-in-the-middle attacks.  
 For a proper fix, see Creating a Proper Self-Signed Certificate below.
 
-</details>
+:::
 
 <details>
 <summary>✅ Creating a Proper Self-Signed Certificate</summary>
