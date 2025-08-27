@@ -30,6 +30,7 @@
     "@types/node": "^24.1.0",
     "@types/node-fetch": "^2.6.12",
     "copyfiles": "^2.4.1",
+    "cpy-cli": "^6.0.0",
     "tsup": "^8.5.0",
     "typedoc": "^0.28.11",
     "typedoc-plugin-markdown": "^4.8.1",
