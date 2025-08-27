@@ -32,7 +32,7 @@ If you already know the basics and want a fast reference:
 
    ```ts
    import { SatisfactoryApi } from 'satisfactory-dedicated-server-api';
-   const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true });
+   const api = new SatisfactoryApi('127.0.0.1', 7777);
    ```
 3. **Fetch and trust the server certificate**
 
@@ -75,8 +75,8 @@ yarn add satisfactory-dedicated-server-api
 import { SatisfactoryApi, MinimumPrivilegeLevel } from 'satisfactory-dedicated-server-api';
 
 // Create a new API client instance connecting to your server at 127.0.0.1:7777
-const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true });
-````
+const api = new SatisfactoryApi('127.0.0.1', 7777);
+```
 
 ### Fetch and Trust the Server Certificate
 
@@ -86,33 +86,43 @@ Before using the API, you **must fetch and trust the server's SSL certificate**:
 await api.initCertificate();
 ```
 
-* This ensures the certificate itself is trusted by Node.js.
-* If you connect via a local IP or a hostname that does not match the certificate, you may still see a **hostname mismatch error**.
+* This ensures the certificate is loaded and trusted by nodejs
+
+---
 
 ### SSL Certificates and Hostname Considerations
 
-The API communicates with the server over **HTTPS**, which requires a trusted SSL certificate. Node.js enforces two checks:
+The API communicates with the server over **HTTPS**, which requires a valid SSL certificate.
+Node.js enforces two checks:
 
 1. **Certificate validity** – Is the certificate trusted by your system?
 2. **Hostname matching** – Does the certificate hostname match the server hostname you are connecting to?
 
-> ⚠️ On local servers (like 127.0.0.1), the hostname will not match a self-signed certificate, which causes Node.js to reject the connection.
+> ⚠️ On local servers (like `127.0.0.1`), the hostname usually does not match a self-signed certificate, which causes Node.js to reject the connection.
 
-### Using `skipSSLVerification` (Not Recommended for Production)
+<details class="alert alert--warning">
+<summary>⚠️ Hostname mismatch error & bypass</summary>
 
-If you encounter hostname mismatches during local testing, you can temporarily bypass hostname verification:
+If you connect using a local IP or a hostname that does not match the certificate,
+you may encounter a **hostname mismatch error** during TLS verification.
+
+To bypass this in **development or local testing**, you can disable strict SSL verification:
 
 ```ts
 const api = new SatisfactoryApi('127.0.0.1', 7777, { skipSSLVerification: true });
 ```
 
-* **Only use this for local servers.**
-* **Do not use in production**, as it disables SSL protections against man-in-the-middle attacks.
+⚠️ **Warning:** Only use this option in trusted environments (like local testing).  
+Do **not** disable SSL verification in production, as it removes protection against man-in-the-middle attacks.  
+For a proper fix, see Creating a Proper Self-Signed Certificate below.
+
+</details>
 
 <details>
-<summary>Creating a Proper Self-Signed Certificate for Local Testing</summary>
+<summary>✅ Creating a Proper Self-Signed Certificate</summary>
 
-You can generate a self-signed certificate that matches your server's hostname or IP:
+Instead of bypassing SSL checks, you can generate a self-signed certificate that matches your server’s hostname or IP.
+This ensures **secure SSL validation** without disabling hostname verification.
 
 1. Go to your FactoryGame directory
 2. Create a folder named `Certificates` in `FactoryGame\`
@@ -147,7 +157,8 @@ You can generate a self-signed certificate that matches your server's hostname o
     ```
 5. Restart your Satisfactory Dedicated Server to use the new certificate.
 
-> This allows proper SSL validation without bypassing hostname checks.
+✅ After this setup your client can connect securely without using skipSSLVerification,
+and you keep the full security benefits of TLS while still working locally.
 
 </details>
 
