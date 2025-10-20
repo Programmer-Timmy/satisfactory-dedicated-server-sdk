@@ -61,7 +61,7 @@ const state = await api.queryServerState();
 console.log(state.data);
 ```
 
-> For more examples and advanced features, see the [Examples](https://programmer-timmy.github.io/satisfactory-dedicated-server-sdk/docs/examples/) section on the docs site.
+> For more examples and advanced features, see the [Guids](https://programmer-timmy.github.io/satisfactory-dedicated-server-sdk/docs/guides) section on the docs site.
 
 ---
 
