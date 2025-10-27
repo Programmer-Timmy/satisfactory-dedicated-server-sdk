@@ -7,8 +7,9 @@ import {APIError} from "./exceptions/APIError";
 import https from 'https';
 import fetch from 'node-fetch';
 
-import fs from 'fs';
+import fs from "fs";
 import path from 'path';
+import FormData from "form-data";
 import {SatisfactoryApiOptions} from "./Interfaces/SatisfactoryApiOptions";
 
 /**
@@ -61,7 +62,7 @@ export class SatisfactoryApi {
      * await api.initCertificate();
      * ```
      */    public async initCertificate() {
-        const agent = new https.Agent({ rejectUnauthorized: false });
+        const agent = new https.Agent({rejectUnauthorized: false});
         if (!fs.existsSync(path.join(__dirname, '/certs'))) {
             fs.mkdirSync(path.join(__dirname, '/certs'));
         }
@@ -70,7 +71,7 @@ export class SatisfactoryApi {
 
         // Fetch the certificate
         const cert = await new Promise<import("tls").PeerCertificate>((resolve, reject) => {
-            const req = https.request({ hostname: this.host, port: this.port, method: "GET", agent }, (res) => {
+            const req = https.request({hostname: this.host, port: this.port, method: "GET", agent}, (res) => {
                 const tlsSocket = res.socket as import("tls").TLSSocket;
                 resolve(tlsSocket.getPeerCertificate());
             });
@@ -100,23 +101,47 @@ export class SatisfactoryApi {
      * @param functionName - The API function name to call.
      * @param data - Optional data payload for the request.
      * @param timeout - Request timeout in milliseconds (default 10000ms).
-     * @param files - Optional FormData for file uploads.
+     * @param file - Optional file buffer or stream for upload.
      * @returns The raw response from the API.
      * @throws {Error} If the HTTPS agent is not initialized or if the API responds with an error.
      */
-    private async post(functionName: string, data?: any, timeout = 10000, files?: FormData): Promise<any> {
+    private async post(
+        functionName: string,
+        data?: any,
+        timeout = 10000,
+        file?: Buffer
+    ): Promise<any> {
         if (!this.httpsAgent) throw new Error("HTTPS agent not initialized. Call initCertificate first.");
 
         const url = `https://${this.host}:${this.port}/api/v1`;
-        const headers: Record<string, string> = {};
+        let headers: Record<string, string> = {};
+        let body: any;
 
-        if (files) {
-            // FormData
-            if (this.authToken) headers["Authorization"] = `Bearer ${this.authToken}`;
+        if (file) {
+            const form = new FormData();
+
+            // Wrap function and data in "data"
+            const payload = {
+                function: functionName,
+                data: data || {}
+            };
+
+            // Make sure JSON part has proper Content-Type
+            form.append("data", JSON.stringify(payload), { contentType: "application/json" });
+
+            // Add the file as a Buffer with filename
+            form.append("saveGameFile", file, "savegame.sav");
+
+            body = form;
+
+            headers = {
+                ...form.getHeaders(), // includes boundary
+                ...(this.authToken ? { Authorization: `Bearer ${this.authToken}` } : {})
+            };
         } else {
             headers["Content-Type"] = "application/json";
             if (this.authToken) headers["Authorization"] = `Bearer ${this.authToken}`;
-            data = data ? {function: functionName, data} : {function: functionName};
+            body = JSON.stringify(data ? { function: functionName, data } : { function: functionName });
         }
 
         const controller = new AbortController();
@@ -126,9 +151,9 @@ export class SatisfactoryApi {
             const response = await fetch(url, {
                 method: "POST",
                 headers,
-                body: files ? files as any : JSON.stringify(data),
+                body,
                 agent: this.httpsAgent,
-                signal: controller.signal,
+                signal: controller.signal
             });
 
             clearTimeout(id);
@@ -141,9 +166,8 @@ export class SatisfactoryApi {
             if (response.status === 204) return {};
 
             const contentType = response.headers.get("Content-Type") ?? "";
-
             if (contentType.includes("application/json")) {
-                const json: any = await response.json();
+                const json = await response.json();
                 if (json.errorCode) throw new APIError(json.errorMessage || "API error", json.errorCode);
                 return json.data;
             } else if (contentType.includes("application/octet-stream")) {
@@ -169,7 +193,11 @@ export class SatisfactoryApi {
      * if (health.success) console.log("Server is healthy");
      * ```
      */
-    async healthCheck(clientCustomData: string = '', retries: number = 3): Promise<{ success: boolean; data?: any; message?: string }> {
+    async healthCheck(clientCustomData: string = '', retries: number = 3): Promise<{
+        success: boolean;
+        data?: any;
+        message?: string
+    }> {
         /**
          * Perform a health check on the Satisfactory Dedicated Server API.
          * This method sends a POST request to the 'HealthCheck' endpoint with optional client custom data (mostly not required).
@@ -185,16 +213,16 @@ export class SatisfactoryApi {
                 const baseTimeout = this.options?.healthCheckTimeout || 1000;
                 const timeout = baseTimeout + i * 1000; // 1000, 2000, 3000, ...
                 // Attempt health check
-                const response = await this.post('HealthCheck', { ClientCustomData: clientCustomData }, timeout);
-                return { success: true, data: response };
+                const response = await this.post('HealthCheck', {ClientCustomData: clientCustomData}, timeout);
+                return {success: true, data: response};
             } catch (err: any) {
                 if (i === retries - 1) {
-                    return { success: false, message: `Health check failed after ${retries} attempts: ${err.message}` };
+                    return {success: false, message: `Health check failed after ${retries} attempts: ${err.message}`};
                 }
             }
         }
 
-        return { success: false, message: 'Health check failed' };
+        return {success: false, message: 'Health check failed'};
     }
 
     /**
@@ -205,7 +233,7 @@ export class SatisfactoryApi {
      */
     async verifyAuthenticationToken(): Promise<Response> {
         await this.post('VerifyAuthenticationToken');
-        return { success: true, data: { message: 'Token is valid' } };
+        return {success: true, data: {message: 'Token is valid'}};
     }
 
     /**
@@ -219,7 +247,7 @@ export class SatisfactoryApi {
             MinimumPrivilegeLevel: minimumPrivilegeLevel,
         });
         this.authToken = response.authenticationToken;
-        return { success: true, data: { message: 'Successfully logged in, the token is now stored' } };
+        return {success: true, data: {message: 'Successfully logged in, the token is now stored'}};
     }
 
     /**
@@ -235,7 +263,7 @@ export class SatisfactoryApi {
             Password: password,
         });
         this.authToken = response.authenticationToken;
-        return { success: true, data: { message: 'Successfully logged in, the token is now stored' } };
+        return {success: true, data: {message: 'Successfully logged in, the token is now stored'}};
     }
 
     /**
@@ -245,7 +273,7 @@ export class SatisfactoryApi {
      */
     async queryServerState(): Promise<Response> {
         const response = await this.post('QueryServerState');
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -255,7 +283,7 @@ export class SatisfactoryApi {
      */
     async getServerOptions(): Promise<Response> {
         const response = await this.post('GetServerOptions');
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -265,7 +293,7 @@ export class SatisfactoryApi {
      */
     async getAdvancedGameSettings(): Promise<Response> {
         const response = await this.post('GetAdvancedGameSettings');
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -304,7 +332,7 @@ export class SatisfactoryApi {
             ServerName: serverName,
             AdminPassword: adminPassword,
         });
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -314,8 +342,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming the change.
      */
     async renameServer(serverName: string): Promise<Response> {
-        const response = await this.post('RenameServer', { ServerName: serverName });
-        return { success: true, data: response };
+        const response = await this.post('RenameServer', {ServerName: serverName});
+        return {success: true, data: response};
     }
 
     /**
@@ -325,8 +353,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming the change.
      */
     async setClientPassword(password: string): Promise<Response> {
-        const response = await this.post('SetClientPassword', { Password: password });
-        return { success: true, data: response };
+        const response = await this.post('SetClientPassword', {Password: password});
+        return {success: true, data: response};
     }
 
     /**
@@ -341,7 +369,7 @@ export class SatisfactoryApi {
             Password: password,
             AuthenticationToken: authToken,
         });
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -351,8 +379,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming the change.
      */
     async setAutoLoadSessionName(sessionName: string): Promise<Response> {
-        const response = await this.post('SetAutoLoadSessionName', { SessionName: sessionName });
-        return { success: true, data: response };
+        const response = await this.post('SetAutoLoadSessionName', {SessionName: sessionName});
+        return {success: true, data: response};
     }
 
     /**
@@ -362,8 +390,8 @@ export class SatisfactoryApi {
      * @returns A `Response` with the command output.
      */
     async runCommand(command: string): Promise<Response> {
-        const response = await this.post('RunCommand', { Command: command });
-        return { success: true, data: response };
+        const response = await this.post('RunCommand', {Command: command});
+        return {success: true, data: response};
     }
 
     /**
@@ -389,7 +417,7 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming application.
      */
     async applyServerOptions(options: ServerOptions): Promise<Response> {
-        await this.post('ApplyServerOptions', { UpdatedServerOptions: serverOptionsToDict(options) });
+        await this.post('ApplyServerOptions', {UpdatedServerOptions: serverOptionsToDict(options)});
         return {
             success: true,
             data: {
@@ -406,8 +434,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming creation.
      */
     async createNewGame(gameData: NewGameData): Promise<Response> {
-        const response = await this.post('CreateNewGame', { NewGameData: gameData });
-        return { success: true, data: response };
+        const response = await this.post('CreateNewGame', {NewGameData: gameData});
+        return {success: true, data: response};
     }
 
     /**
@@ -417,8 +445,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming the save.
      */
     async saveGame(saveName: string): Promise<Response> {
-        const response = await this.post('SaveGame', { SaveName: saveName });
-        return { success: true, data: response };
+        const response = await this.post('SaveGame', {SaveName: saveName});
+        return {success: true, data: response};
     }
 
     /**
@@ -428,8 +456,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming deletion.
      */
     async deleteSaveFile(saveName: string): Promise<Response> {
-        const response = await this.post('DeleteSaveFile', { SaveName: saveName });
-        return { success: true, data: response };
+        const response = await this.post('DeleteSaveFile', {SaveName: saveName});
+        return {success: true, data: response};
     }
 
     /**
@@ -439,8 +467,8 @@ export class SatisfactoryApi {
      * @returns A `Response` confirming deletion.
      */
     async deleteSaveSession(sessionName: string): Promise<Response> {
-        const response = await this.post('DeleteSaveSession', { SessionName: sessionName });
-        return { success: true, data: response };
+        const response = await this.post('DeleteSaveSession', {SessionName: sessionName});
+        return {success: true, data: response};
     }
 
     /**
@@ -450,7 +478,7 @@ export class SatisfactoryApi {
      */
     async enumerateSessions(): Promise<Response> {
         const response = await this.post('EnumerateSessions');
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
@@ -465,23 +493,48 @@ export class SatisfactoryApi {
             SaveName: saveName,
             EnableAdvancedGameSettings: enableAdvancedGameSettings,
         });
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 
     /**
      * Uploads a save game to the server.
      *
+     * @param filePath - Path to the save file on the local filesystem.
      * @param saveName - Name of the save file.
      * @param loadSaveGame - Whether to load the game after upload (default false).
      * @param enableAdvancedGameSettings - Whether to apply advanced game settings (default false).
-     * @throws {Error} This method is not implemented yet.
+     *
+     * @Example
+     * ```ts
+     * await api.uploadSaveGame("C:\\saves\\my_save.sav", "my_save", true, true);
+     * ```
+     * @returns A `Response` confirming successful upload.
      */
     async uploadSaveGame(
+        filePath: string,
         saveName: string,
         loadSaveGame = false,
         enableAdvancedGameSettings = false
     ): Promise<Response> {
-        throw new Error('This method is not implemented yet');
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`File not found: ${filePath}`);
+        }
+
+        // Read file into a Blob for proper FormData compatibility
+        const fileBuffer = fs.readFileSync(filePath);
+        const fileBlob = new Blob([fileBuffer], { type: "application/octet-stream" });
+
+        const response = await this.post(
+            "UploadSaveGame",
+            {
+                SaveName: saveName,
+                LoadSaveGame: loadSaveGame,
+                EnableAdvancedGameSettings: enableAdvancedGameSettings,
+            },
+            60000,
+            Buffer.from(await fileBlob.arrayBuffer())
+        );
+        return { success: true, data: response };
     }
 
     /**
@@ -491,8 +544,8 @@ export class SatisfactoryApi {
      * @returns A `Response` containing the save as an ArrayBuffer.
      */
     async downloadSaveGame(saveName: string): Promise<Response> {
-        const response = await this.post('DownloadSaveGame', { SaveName: saveName });
+        const response = await this.post('DownloadSaveGame', {SaveName: saveName});
         // response is an ArrayBuffer for binary content
-        return { success: true, data: response };
+        return {success: true, data: response};
     }
 }

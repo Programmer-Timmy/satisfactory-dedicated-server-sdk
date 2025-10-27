@@ -2,8 +2,6 @@
 
 A TypeScript / JavaScript SDK for interacting with the **Satisfactory** dedicated server API.
 
-> **Note:** This package is still in early development and may change frequently. It is **not recommended** for production environments yet.
-
 ---
 
 ## Features
